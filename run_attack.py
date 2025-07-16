@@ -20,12 +20,12 @@ def get_beta(i, num_iter):
 def main():
     argparser = argparse.ArgumentParser()
     argparser.add_argument('--num_iter', type=int, default=1500, help='number of iterations')
-    argparser.add_argument('--img', type=str, default='C:/users/julien/rai_project_LOCAL/adv_explanation_ref/data/dog2.png', help='image net file to run attack on')
-    argparser.add_argument('--target_img', type=str, default='C:/users/julien/rai_project_LOCAL/adv_explanation_ref/data/dupa2.png',
+    argparser.add_argument('--img', type=str, default='C:/users/julien/raiproject/adv_explanation_ref/data/dog2.png', help='image net file to run attack on')
+    argparser.add_argument('--target_img', type=str, default='C:/users/julien/raiproject/adv_explanation_ref/data/dupa2.png',
                            help='imagenet file used to generate target expl')
     argparser.add_argument('--lr', type=float, default=0.0002, help='lr')
     argparser.add_argument('--cuda', help='enable GPU mode', action='store_true')
-    argparser.add_argument('--output_dir', type=str, default='C:/users/julien/rai_project_LOCAL/adv_explanation_ref/output/', help='directory to save results to')
+    argparser.add_argument('--output_dir', type=str, default='C:/users/julien/raiproject/adv_explanation_ref/output/', help='directory to save results to')
     argparser.add_argument('--beta_growth', help='enable beta growth', action='store_true')
     argparser.add_argument('--prefactors', nargs=2, default=[1e11, 1e6], type=float,
                            help='prefactors of losses (diff expls, class loss)')
@@ -33,6 +33,8 @@ def main():
                            choices=['lrp', 'guided_backprop', 'gradient', 'integrated_grad',
                                     'pattern_attribution', 'grad_times_input'],
                            default='lrp')
+    argparser.add_argument('--model_path', type=str, default='C:/users/julien/raiproject/adv_explanation_ref/models/model_vgg16_pattern_small.pth', help='optional path to model weights')
+
     args = argparser.parse_args()
 
     # options
@@ -45,7 +47,7 @@ def main():
     vgg_model = torchvision.models.vgg16(pretrained=True)
     model = ExplainableNet(vgg_model, data_mean=data_mean, data_std=data_std, beta=1000 if args.beta_growth else None)
     if method == ExplainingMethod.pattern_attribution:
-        model.load_state_dict(torch.load('C:/users/julien/rai_project_LOCAL/adv_explanation_ref/models/model_vgg16_pattern_small.pth'), strict=False)
+        model.load_state_dict(torch.load(args.model_path), strict=False)
     model = model.eval().to(device)
 
     # load images
